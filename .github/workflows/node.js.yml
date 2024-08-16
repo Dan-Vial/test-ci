@@ -41,7 +41,6 @@ jobs:
 
       - run: |
           export NAME="dist-`openssl rand -hex 4`-`date +%d-%m-%Y`" \
-          gh release create -t "$NAME" "$NAME" --generate-notes && \
-          gh release create "${NAME}-zip" "./dist/*"
+          gh release create "$NAME" "./dist/*"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
