@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-dist="dist_test"
+echo "***** dist ci test *****"
+
+dist="dist"
 
 mkdir "${dist}"
 cp "test1" "${dist}/test1"
