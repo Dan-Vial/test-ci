@@ -29,9 +29,12 @@ jobs:
       - run: npm i
       - run: npm run build --if-present
 
-      - name: Archive production artifacts
+      - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: zip log
           path: |
-            dist
+            log-ci
+
+      - run: cd dist
+      - run: gh release create -t "dist" "$(date +%d-%m-%Y)" --generate-notes
