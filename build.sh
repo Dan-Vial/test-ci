@@ -15,8 +15,8 @@ if [ ! -d "$dist" ]; then
   mkdir "${dist}"
 fi
 
-logMsg "copi files code1"
-cp "code1" "${dist}/code1"
+logMsg "copi files code1.js"
+cp "code1.js" "${dist}/code1.js"
 
-logMsg "copi files code2"
-cp "code2" "${dist}/code2"
+logMsg "copi files code2.js"
+cp "code2.js" "${dist}/code2.js"
