@@ -39,7 +39,10 @@ jobs:
           path: |
             log-ci
 
+      - run: tar -czvf dist.tar.gz ./dist
       - run: |
-          gh release create "v1" "dist/**/*"
+          export NAME="dist-`openssl rand -hex 4`-`date +%d-%m-%Y`" \
+          gh release create -t "$NAME" "$NAME" --generate-notes && \
+          gh release create "$NAME-zip" "dist.tar.gz"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
