@@ -40,6 +40,6 @@ jobs:
             log-ci
 
       - run: |
-          gh release create "v1" "./dist/*.tgz"
+          gh release create "v1" "./dist"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
