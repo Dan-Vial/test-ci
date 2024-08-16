@@ -40,7 +40,6 @@ jobs:
             log-ci
 
       - run: |
-          export NAME="dist-`openssl rand -hex 4`-`date +%d-%m-%Y`" \
-          gh release create "$NAME" "./dist/*"
+          gh release create "v1" "./dist/*.tgz"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
