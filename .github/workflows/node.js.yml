@@ -41,7 +41,7 @@ jobs:
 
       - run: |
           NAME="dist-`openssl rand -hex 4`-`date +%d-%m-%Y`"      \
-          cd dist                                                 \
+          cd dist &&                                              \
           gh release create -t "$NAME" "$NAME" --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
