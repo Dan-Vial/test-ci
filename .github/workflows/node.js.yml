@@ -40,8 +40,6 @@ jobs:
             log-ci
 
       - run: tar -czvf "dist.tar.gz" "./dist"
-      - run: |
-          export NAME="dist-$(date +%d-%m-%Y-%T)" \
-          gh release create "$NAME" ./dist.tar.gz
+      - run: gh release create "v1.0.0-alpha" ./dist.tar.gz
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
