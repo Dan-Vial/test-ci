@@ -1,13 +1,12 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: Node.js CI
+name: CI/CD
 
 on:
   push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+    branches:
+      - "main"
 
 jobs:
   build:
@@ -15,23 +14,73 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [20.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+
+      - name: Get repository name
+        run: |
+          set -e
+          REPO_GET_NAME="${{ github.repository }}"
+          REPO_NAME_ONLY="${REPO_GET_NAME##*/}"
+          REPO_NAME_SAFE="${REPO_NAME_ONLY//[-.]/_}"
+          echo "REPO_NAME=${REPO_NAME_SAFE}" >> $GITHUB_ENV
+
+      - name: Set up tag name
+        id: set_tag
+        run: |
+          set -e
+          TAG_HASH=$(git rev-parse --short HEAD)
+          VERSION_GET=$(cat version.txt)
+          echo "TAG_NAME_WITH_HASH=${VERSION_GET}-${TAG_HASH}" >> $GITHUB_ENV
+
+      - name: Set up Node.js ${{ matrix.node-version }} for frontend
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-      - run: npm ci
-      - run: npm i
-      - run: npm run build --if-present
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v4
+      - name: "frontend : install, test, build"
+        run: |
+          set -e
+          ./scripts/build.sh "frontend"
+      
+      - name: Set up Node.js ${{ matrix.node-version }} for backend
+        uses: actions/setup-node@v4
         with:
-          name: dist
-          path: |
-            dist
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: "backend : install, test, build"
+        run: |
+          set -e
+          ./scripts/build.sh "backend"
+
+      - name: Create archive TAR
+        run: |
+          set -e
+          ./scripts/tararchive.sh "$REPO_NAME-$TAG_NAME_WITH_HASH"
+
+      - name: Create release with TAG
+        run: |
+          set -e
+          ./scripts/ghrelease.sh "$REPO_NAME" "$TAG_NAME_WITH_HASH"
+
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub issue on failure
+        if: failure()
+        run: |
+          set -e
+          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -d '{"title": "CI/CD Build Failure", "body": "The CI/CD workflow failed on the Build job.
+          $REPO_NAME-$TAG_NAME_WITH_HASH"}' \
+          https://api.github.com/repos/${{ github.repository }}/issues
