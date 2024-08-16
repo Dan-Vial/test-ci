@@ -36,5 +36,8 @@ jobs:
           path: |
             log-ci
 
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - run: cd dist
       - run: gh release create -t "dist" "$(date +%d-%m-%Y)" --generate-notes
