@@ -42,6 +42,6 @@ jobs:
       - run: tar -czvf "dist.tar.gz" "./dist"
       - run: |
           export NAME="dist-$(openssl rand -hex 4)-$(date +%d-%m-%Y)" \
-          gh release create "$NAME" "./dist.tar.gz"
+          gh release create "$NAME" "dist.tar.gz"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
