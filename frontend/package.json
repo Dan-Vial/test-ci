@@ -1,0 +1,14 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "../test.sh",
+    "prebuild": "[ -d ./dist ] && rm -r ./dist || exit 0",
+    "build": "mkdir ./dist && cp ./index.html ./dist/index.html"
+  },
+  "keywords": [],
+  "author": "Dan VIAL",
+  "license": "MIT",
+  "description": ""
+}
