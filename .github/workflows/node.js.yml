@@ -19,10 +19,7 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     permissions:
-      contents: read
-      issues: write
-      actions: read
-      checks: write
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
