@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "test ci",
   "scripts": {
-    "build": "./build.sh"
+    "build": "./build.sh",
+    "test": "./test.sh"
   },
-  "keywords": [],
   "author": "Dan VIAL",
   "license": "MIT"
 }

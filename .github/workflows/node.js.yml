@@ -30,7 +30,12 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm i
+
       - run: npm run build --if-present
+      - run: tar -czvf "dist.tar.gz" "./dist"
+      
+      # pas d'option --if-present, un test obligatoire
+      - run: npm test 
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
@@ -38,8 +43,8 @@ jobs:
           name: zip log
           path: |
             log-ci
-
-      - run: tar -czvf "dist.tar.gz" "./dist"
-      - run: gh release create "v1.0.0-alpha" ./dist.tar.gz
+      
+      # openssl rand -hex 4: generate random tag
+      - run: gh release create "v1.0.0-alpha-`openssl rand -hex 4`" ./dist.tar.gz
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
