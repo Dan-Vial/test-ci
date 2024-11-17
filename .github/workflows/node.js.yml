@@ -1,13 +1,14 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: Node.js CI
+name: CI/CD
 
 on:
   push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+    branches:
+      - "main"
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+-[0-9a-zA-Z]+"
 
 jobs:
   build:
@@ -17,34 +18,76 @@ jobs:
       matrix:
         node-version: [20.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        project: [frontend, backend]
 
     permissions:
       contents: write
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check tag format
+        run: |
+          if [[ ! $GITHUB_REF =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+-(alpha|beta|stable)$ ]]; then
+            echo "Tag format is invalid"
+            exit 1
+          fi
+      
+      - name: Get repository name
+        run: |
+          REPO_NAME="${{ github.repository }}"
+          REPO_NAME_ONLY="${REPO_NAME##*/}"
+          echo "${REPO_NAME_ONLY}" >> $GITHUB_ENV
+
+      - name: Set up tag name
+        id: set_tag
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          TAG_HASH=$(git rev-parse --short HEAD)
+          echo "TAG_NAME_WITH_HASH=${TAG_NAME}-${TAG_HASH}" >> $GITHUB_ENV
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-      - run: npm ci
-      - run: npm i
 
-      - run: npm run build --if-present
-      - run: tar -czvf "dist.tar.gz" "./dist"
-      
-      # pas d'option --if-present, un test obligatoire
-      - run: npm test 
+      - name: ${{ matrix.project }} install, test, build
+        run: |
+          cd ${{ matrix.project }}
+          echo "Starting ${{ matrix.project }} build..." >> ../log-ci.log
+          npm ci 2>&1 | tee -a ../log-ci.log
+          npm test 2>&1 | tee -a ../log-ci.log
+          npm run build 2>&1 | tee -a ../log-ci.log
+          cd ..
+
+      - name: Create archive TAR
+        run: |
+          echo "Starting create archive TAR..." >> log-ci.log
+          mv frontend/dist backend/dist/public
+          tar -czvf "./$REPO_NAME_ONLY-$TAG_NAME_WITH_HASH-dist.tar.gz" "./backend/dist" >> log-ci.log
+
+      - name: Create release with TAG
+        run: |
+          echo "Starting create release with TAG..." >> log-ci.log
+          gh release create "$TAG_NAME_WITH_HASH" "./$REPO_NAME_ONLY-$TAG_NAME_WITH_HASH-dist.tar.gz" >> log-ci.log
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: clean ANSI escape sequences
+        run: sed -i 's/\x1b\[[0-9;]*m//g' log-ci.log
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: zip log
+          name: ci_log
           path: |
-            log-ci
-      
-      # openssl rand -hex 4: generate random tag
-      - run: gh release create "v1.0.0-alpha-`openssl rand -hex 4`" ./dist.tar.gz
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            log-ci.log
+
+      - name: Create GitHub issue on failure
+        if: failure()
+        run: |
+          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -d '{"title": "CI/CD Build Failure", "body": "The CI/CD workflow failed on the Build job.
+          $REPO_NAME_ONLY-$TAG_NAME_WITH_HASH"}' \
+          https://api.github.com/repos/${{ github.repository }}/issues

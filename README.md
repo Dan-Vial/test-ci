@@ -4,13 +4,9 @@ Dépôt, intégration continue. Une simple démonstration, code factice.
 
 ## Les besoins.
 
-- construire l’application : création du dossier build ou dist`.
+- construire l’application : `npm run build`.
 
-  > ici la construction récupère uniquement les fichiers code1.js et code2.js.
-
-  La commande `npm run build` invoque le fichier `build.sh`
-
-- Test de l’application : `npm run test` invoque le fichier `test.sh`
+- Test de l’application : `npm run test`
 
 - Archive artéfacts: log test…
 
@@ -24,7 +20,7 @@ Dépôt, intégration continue. Une simple démonstration, code factice.
 
 ## Action
 
-À chaque `push ou pull request` sur la `branch main`, on déclenche l’action du workflows.
+À chaque `push` sur la `branch main` et un `TAag` valide, on déclenche l’action du workflows.
 
 ## Finalité
 

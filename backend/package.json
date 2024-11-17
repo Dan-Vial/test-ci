@@ -1,0 +1,14 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prebuild": "[ -d ./dist ] && rm -r ./dist || exit 0",
+    "build": "mkdir ./dist && cp ./server.js ./dist/server.js"
+  },
+  "keywords": [],
+  "author": "Dan VIAL",
+  "license": "MIT",
+  "description": ""
+}
