@@ -35,9 +35,10 @@ jobs:
         id: set_tag
         run: |
           set -e
-          echo "TAG_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          TAG_HASH=$(git rev-parse --short HEAD)
           VERSION_GET=$(cat version.txt)
           echo "TAG_NAME_WITH_HASH=${VERSION_GET}-${TAG_HASH}" >> $GITHUB_ENV
+          echo "TAG_HASH=${TAG_HASH}" >> $GITHUB_ENV
 
       - name: Set up Node.js ${{ matrix.node-version }} for frontend
         uses: actions/setup-node@v4
