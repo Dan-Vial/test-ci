@@ -35,7 +35,7 @@ jobs:
         id: set_tag
         run: |
           set -e
-          TAG_HASH=$(git rev-parse --short HEAD)
+          echo "TAG_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           VERSION_GET=$(cat version.txt)
           echo "TAG_NAME_WITH_HASH=${VERSION_GET}-${TAG_HASH}" >> $GITHUB_ENV
 
@@ -71,7 +71,7 @@ jobs:
       - name: Create release with TAG
         run: |
           set -e
-          ./scripts/ghrelease.sh "$REPO_NAME" "$TAG_NAME_WITH_HASH" "$(git rev-parse HEAD)"
+          ./scripts/ghrelease.sh "$REPO_NAME" "$TAG_NAME_WITH_HASH" "$TAG_HASH"
 
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
