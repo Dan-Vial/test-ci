@@ -47,7 +47,12 @@ const server = createServer(async (req, res) => {
 
       const githubEvent = req.headers['x-github-event']
       if (githubEvent === 'release') {
-        cron(data)
+        const action = data.action
+        if (action === 'published') {
+          cron(data)
+        } else {
+          whLog(`action: ${action}`)
+        }
       } else {
         whLog(`event: ${githubEvent}`)
       }
