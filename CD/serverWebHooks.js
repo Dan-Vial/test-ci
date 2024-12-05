@@ -49,7 +49,7 @@ const server = createServer(async (req, res) => {
       if (githubEvent === 'release') {
         cron(data)
       } else {
-        whLog(`event: ${githubEvent}`, JSON.stringify(data, null, '\t'))
+        whLog(`event: ${githubEvent}`)
       }
     } catch (error) {
       console.error('Erreur lors du traitement de la requête:', error)
