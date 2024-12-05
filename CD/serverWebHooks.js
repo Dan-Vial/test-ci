@@ -51,10 +51,9 @@ const server = createServer(async (req, res) => {
 
       const githubEvent = req.headers['x-github-event']
       if (githubEvent === 'release') {
-        whLog('Données de la release:', data)
-        cron(JSON.stringify(data, null, '\t'))
+        cron(data)
       } else {
-        whLog(`Unhandled event: ${githubEvent}`)
+        whLog(`event: ${githubEvent}`, JSON.stringify(data, null, '\t'))
       }
     } catch (error) {
       console.error('Erreur lors du traitement de la requête:', error)

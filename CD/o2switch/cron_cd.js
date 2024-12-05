@@ -25,7 +25,7 @@ await init(config)
 // startApp()
 
 function cron(data) {
-  console.log(data)
+  console.log(JSON.stringify(data, null, '\t'))
 }
 
 export default cron
