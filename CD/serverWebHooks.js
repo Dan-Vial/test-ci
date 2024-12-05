@@ -8,7 +8,7 @@ const SECRET = process.env.WEBHOOKS_SECRET
 const TOKEN = process.env.WEBHOOKS_TOKEN
 const UNIQUE_PATH = process.env.WEBHOOKS_UNIQUE_PATH
 
-const whLog = (msg) => {
+const whLog = (...msg) => {
   const d = new Date()
   console.log(`${d.toLocaleDateString('fr')} ${d.toLocaleTimeString('fr')} log: ${msg}`)
 }
@@ -25,10 +25,6 @@ const server = createServer(async (req, res) => {
   res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   if (req.method === 'POST' && req.url === UNIQUE_PATH) {
     try {
-      // if (req.headers['x-webhook-token'] !== TOKEN) {
-      //   res.statusCode = 403
-      //   return res.end('Forbidden')
-      // }
 
       if (req.headers['content-type'] !== 'application/json') {
         whLog('Invalid Content-Type, expected application/json')
