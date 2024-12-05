@@ -68,24 +68,12 @@ jobs:
           set -e
           ./scripts/tararchive.sh "$REPO_NAME-$TAG_NAME_WITH_HASH"
 
-      # - name: Create release with TAG
-      #   run: |
-      #     set -e
-      #     ./scripts/ghrelease.sh "$REPO_NAME" "$TAG_NAME_WITH_HASH" "$(git rev-parse HEAD)"
-
-      #   env:
-      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Create release with TAG
-        uses: actions/create-release@v1
+        run: |
+          set -e
+          ./scripts/ghrelease.sh "$REPO_NAME" "$TAG_NAME_WITH_HASH" "$(git rev-parse HEAD)" "${{ github.repository }}"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref_name }}
-          release_name: "Release ${{ github.ref_name }}"
-          body: "This release was automatically created."
-          draft: false
-          prerelease: false
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub issue on failure
         if: failure()
