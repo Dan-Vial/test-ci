@@ -1,5 +1,6 @@
 import { init, startApp, stopApp } from './Lib_cd.js'
 import config from './cd.config.json' with { type: 'json' }
+import v from '../../version.json' with { type: 'json' }
 
 await init(config)
 /**
@@ -25,7 +26,8 @@ await init(config)
 // startApp()
 
 function cron(data) {
-  console.log(JSON.stringify(data, null, '\t'))
+  const { tag_name, html_url } = data.release
+  console.log(tag_name, html_url)
 }
 
 export default cron

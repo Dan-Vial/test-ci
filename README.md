@@ -2,6 +2,22 @@
 
 Dépôt, intégration continue. Une simple démonstration, code factice.
 
+```txt
+.
+├── backend
+│   └── ...
+├── CD
+│   └── o2switch
+│   └── other host...
+├── frontend
+│   └── ...
+├── .github
+│   └── workflows
+│       └── ...
+└── scripts workflows
+    └── ...
+```
+
 ## Les besoins.
 
 - construire l’application : `npm run build`.
