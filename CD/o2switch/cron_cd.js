@@ -1,6 +1,5 @@
 import { init, startApp, stopApp } from './Lib_cd.js'
 import config from './cd.config.json' with { type: 'json' }
-import v from '../../version.json' with { type: 'json' }
 
 await init(config)
 /**
